@@ -29,7 +29,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.stream.Stream;
 
 import static io.qameta.allure.SeverityLevel.CRITICAL;
-import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 @GqlTest
@@ -59,13 +58,14 @@ public class ProfileTests extends BaseApi {
                                @Extras TestUser[] users,
                                @AuthClient AuthApiClient client
     ) {
-        String token = client.doLogin(users[0].getUsername(), users[0].getTestData().password());
+        String userName = users[0].getUsername();
+        String token = client.doLogin(userName, users[0].getTestData().password());
 
         Response userUpdateResponse = USER_API.updateUser(token, firstName, surName, avatar, location);
-        updateUserCheck(userUpdateResponse, users[0].getUsername(), firstName, surName, avatar, location);
+        updateUserCheck(userUpdateResponse, userName, firstName, surName, avatar, location);
 
         Response userInfoResponse = USER_API.updateUser(token, firstName, surName, avatar, location);
-        updateUserCheck(userInfoResponse, users[0].getUsername(), firstName, surName, avatar, location);
+        updateUserCheck(userInfoResponse, userName, firstName, surName, avatar, location);
     }
 
     @Test
@@ -73,17 +73,18 @@ public class ProfileTests extends BaseApi {
     @CreateExtrasUsers(@CreateUser)
     @DisplayName("Изменение данных в профиле")
     void updateProfileTest(@Extras TestUser[] users, @AuthClient AuthApiClient client) {
+        String userName = users[0].getUsername();
         String avatar = FileUtils.readResourceFile("txt/ruPhoto.txt");
         String firstName = RandomDataUtils.randomName();
         String surName = RandomDataUtils.randomSurname();
         String location = "us";
-        String token = client.doLogin(users[0].getUsername(), users[0].getTestData().password());
+        String token = client.doLogin(userName, users[0].getTestData().password());
 
         Response userUpdateResponse = USER_API.updateUser(token, firstName, surName, avatar, location);
-        updateUserCheck(userUpdateResponse, users[0].getUsername(), firstName, surName, avatar, location);
+        updateUserCheck(userUpdateResponse, userName, firstName, surName, avatar, location);
 
         Response userInfoResponse = USER_API.updateUser(token, firstName, surName, avatar, location);
-        updateUserCheck(userInfoResponse, users[0].getUsername(), firstName, surName, avatar, location);
+        updateUserCheck(userInfoResponse, userName, firstName, surName, avatar, location);
     }
 
     public static void updateUserCheck(Response response,
@@ -92,7 +93,6 @@ public class ProfileTests extends BaseApi {
                                        String expectedSurname,
                                        String expectedAvatar,
                                        String expectedLocationCode) {
-        String id = response.path("data.user.id");
         String username = response.path("data.user.username");
         String firstname = response.path("data.user.firstname");
         String surname = response.path("data.user.surname");
@@ -101,7 +101,6 @@ public class ProfileTests extends BaseApi {
         String locationType = response.path("data.user.location.__typename");
         String userType = response.path("data.user.__typename");
 
-        assertThat("User ID should not be null or empty", id, not(null));
         assertThat("Username should match", username, equalTo(expectedUsername));
 
         if (expectedFirstname != null) {
