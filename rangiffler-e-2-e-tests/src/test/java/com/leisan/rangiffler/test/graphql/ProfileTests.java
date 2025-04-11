@@ -1,9 +1,11 @@
 package com.leisan.rangiffler.test.graphql;
 
+import com.leisan.rangiffler.jupiter.annotation.CreateExtrasUsers;
 import com.leisan.rangiffler.jupiter.annotation.CreateUser;
-import com.leisan.rangiffler.jupiter.annotation.RestApiLogin;
-import com.leisan.rangiffler.jupiter.annotation.Token;
+import com.leisan.rangiffler.jupiter.annotation.Extras;
 import com.leisan.rangiffler.model.testdata.TestUser;
+import com.leisan.rangiffler.service.impl.AuthApiClient;
+import com.leisan.rangiffler.service.impl.AuthClient;
 import io.restassured.response.Response;
 
 import static io.qameta.allure.SeverityLevel.NORMAL;
@@ -39,48 +41,50 @@ public class ProfileTests extends BaseApi {
 
     private static Stream<Arguments> updateUserData() {
         return Stream.of(
-                Arguments.of("Изменение имени", RandomDataUtils.randomName(), null, null, null),
-                Arguments.of("Изменение фамилии", null, RandomDataUtils.randomSurname(), null, null),
-                Arguments.of("Изменение аватара", null, null, FileUtils.readResourceFile("avatar_base64.txt"), null),
+                Arguments.of("Изменение имени", RandomDataUtils.randomName(), null, null, "ru"),
+                Arguments.of("Изменение фамилии", null, RandomDataUtils.randomSurname(), null, "ru"),
+                Arguments.of("Изменение аватара", null, null, FileUtils.readResourceFile("txt/usPhoto.txt"), "ru"),
                 Arguments.of("Изменение локации", null, null, null, "us")
         );
     }
 
+    @CreateExtrasUsers(@CreateUser)
     @ParameterizedTest(name = "{0}")
     @MethodSource("updateUserData")
-    @RestApiLogin
-    @CreateUser
     @Severity(NORMAL)
     void updateUserProfileTest(String displayName,
                                String firstName,
                                String surName,
                                String avatar,
                                String location,
-                               @Token String token,
-                               TestUser user) {
+                               @Extras TestUser[] users,
+                               @AuthClient AuthApiClient client
+    ) {
+        String token = client.doLogin(users[0].getUsername(), users[0].getTestData().password());
+
         Response userUpdateResponse = USER_API.updateUser(token, firstName, surName, avatar, location);
-        updateUserCheck(userUpdateResponse, user.getUsername(), firstName, surName, avatar, location);
+        updateUserCheck(userUpdateResponse, users[0].getUsername(), firstName, surName, avatar, location);
 
         Response userInfoResponse = USER_API.updateUser(token, firstName, surName, avatar, location);
-        updateUserCheck(userInfoResponse, user.getUsername(), firstName, surName, avatar, location);
+        updateUserCheck(userInfoResponse, users[0].getUsername(), firstName, surName, avatar, location);
     }
 
     @Test
-    @RestApiLogin
-    @CreateUser
     @Severity(CRITICAL)
+    @CreateExtrasUsers(@CreateUser)
     @DisplayName("Изменение данных в профиле")
-    void updateProfileTest(@Token String token, TestUser user) {
-        String avatar = FileUtils.readResourceFile("avatar_base64.txt");
+    void updateProfileTest(@Extras TestUser[] users, @AuthClient AuthApiClient client) {
+        String avatar = FileUtils.readResourceFile("txt/ruPhoto.txt");
         String firstName = RandomDataUtils.randomName();
         String surName = RandomDataUtils.randomSurname();
         String location = "us";
+        String token = client.doLogin(users[0].getUsername(), users[0].getTestData().password());
 
         Response userUpdateResponse = USER_API.updateUser(token, firstName, surName, avatar, location);
-        updateUserCheck(userUpdateResponse, user.getUsername(), firstName, surName, avatar, location);
+        updateUserCheck(userUpdateResponse, users[0].getUsername(), firstName, surName, avatar, location);
 
         Response userInfoResponse = USER_API.updateUser(token, firstName, surName, avatar, location);
-        updateUserCheck(userInfoResponse, user.getUsername(), firstName, surName, avatar, location);
+        updateUserCheck(userInfoResponse, users[0].getUsername(), firstName, surName, avatar, location);
     }
 
     public static void updateUserCheck(Response response,
@@ -115,7 +119,7 @@ public class ProfileTests extends BaseApi {
 
         if (expectedLocationCode != null) {
             assertThat("Location code should match", locationCode, equalTo(expectedLocationCode));
-            assertThat("Location typename should be Country", locationType, equalTo("Country"));
+            assertThat("Location typename should be UserCountry", locationType, equalTo("UserCountry"));
         }
 
         assertThat("User typename should be User", userType, equalTo("User"));

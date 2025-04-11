@@ -212,7 +212,7 @@ public class TravelsApi {
     }
 
     @Step("Обновить фото")
-    public Response updatePhoto(String token, String photoId, String base64Image, String description, String countryCode) {
+    public Response updatePhoto(String token, String photoId, String photo, String description, String countryCode) {
         String query = """
             mutation UpdatePhoto($input: PhotoInput!) {
               photo(input: $input) {
@@ -236,13 +236,13 @@ public class TravelsApi {
 
         Map<String, Object> input = new HashMap<>();
         input.put("id", photoId);
-        input.put("src", base64Image);
+        input.put("src", FileUtils.readResourceFile(photo));
         input.put("description", description);
         input.put("country", Map.of("code", countryCode));
 
         return given()
                 .spec(BaseApi.SPEC_GRAPHQL)
-                .header("Authorization", token)
+                .header("Authorization", "Bearer " + token)
                 .body(Map.of(
                         "operationName", "UpdatePhoto",
                         "query", query,

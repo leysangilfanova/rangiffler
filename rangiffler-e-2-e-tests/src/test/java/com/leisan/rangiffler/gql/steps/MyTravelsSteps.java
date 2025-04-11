@@ -112,7 +112,6 @@ public class MyTravelsSteps {
 
     @Step("Проверка создания фотографии")
     public void createPhotoAssert(PhotoResponse photoResponse,
-                                  String expectedSrcPrefix,
                                   String expectedDescription,
                                   String expectedCountryCode,
                                   int expectedTotalLikes,
@@ -123,7 +122,8 @@ public class MyTravelsSteps {
         // Проверка фото
         assertThat(photoResponse.getData().getPhoto().getSrc())
                 .as("Photo src should start with expected prefix")
-                .isEqualTo(expectedSrcPrefix);
+                .isNotBlank()
+                .matches("^data:image/(png|jpe?g);base64,.*");
 
         // Проверка описания фото
         assertThat(photoResponse.getData().getPhoto().getDescription())

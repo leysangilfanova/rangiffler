@@ -33,12 +33,14 @@ public class UserApi {
               }
             }
             """;
+        Map<String, Object> location = new HashMap<>();
+        location.put("code", countryCode);
 
         Map<String, Object> input = new HashMap<>();
         input.put("firstname", firstname);
         input.put("surname", surname);
         input.put("avatar", avatar);
-        input.put("location", countryCode);
+        input.put("location", location);
 
         Map<String, Object> body = Map.of(
                 "operationName", "UpdateUser",
@@ -48,7 +50,7 @@ public class UserApi {
 
         return given()
                 .spec(BaseApi.SPEC_GRAPHQL)
-                .header("Authorization", token)
+                .header("Authorization", "Bearer " + token)
                 .body(body)
                 .post()
                 .andReturn();

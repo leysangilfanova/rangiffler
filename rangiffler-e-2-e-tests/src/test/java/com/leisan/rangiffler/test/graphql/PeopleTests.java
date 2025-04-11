@@ -24,7 +24,7 @@ import static io.qameta.allure.SeverityLevel.CRITICAL;
 @GqlTest
 @Tag("graphql")
 @Story("All people")
-@Feature("Список друзей. API")
+@Feature("Люди")
 public class PeopleTests extends BaseApi {
 
     @Test

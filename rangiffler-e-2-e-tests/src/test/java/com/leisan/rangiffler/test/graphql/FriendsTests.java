@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @GqlTest
 @Tag("graphql")
-@Story("Friends")
+@Story("Друзья")
 @Feature("Список друзей. API")
 public class FriendsTests extends BaseApi {
 

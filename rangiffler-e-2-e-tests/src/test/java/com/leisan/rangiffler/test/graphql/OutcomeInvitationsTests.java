@@ -26,7 +26,7 @@ import static io.qameta.allure.SeverityLevel.CRITICAL;
 
 @GqlTest
 @Tag("graphql")
-@Story("Outcome Invitations")
+@Story("Исходящие заявки")
 @Feature("Список друзей. API")
 public class OutcomeInvitationsTests extends BaseApi {
 

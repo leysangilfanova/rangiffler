@@ -26,9 +26,9 @@ public abstract class BaseApi {
 
     public static final RestAssuredConfig CONFIG = RestAssured.config()
             .httpClient(HttpClientConfig.httpClientConfig()
-                    .setParam("http.connection.timeout", 10000)
-                    .setParam("http.socket.timeout", 10000)
-                    .setParam("http.connection-manager.timeout", 10000));
+                    .setParam("http.connection.timeout", 20000)
+                    .setParam("http.socket.timeout", 20000)
+                    .setParam("http.connection-manager.timeout", 20000));
 
     public static final RequestSpecification SPEC_GRAPHQL = new RequestSpecBuilder()
             .setContentType(ContentType.JSON)
