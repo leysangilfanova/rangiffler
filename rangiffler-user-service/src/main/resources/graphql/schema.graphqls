@@ -1,0 +1,76 @@
+extend schema
+  @link(url: "https://specs.apollo.dev/federation/v2.0",
+        import: ["@key", "@external"])
+
+# Define Federation directives manually
+directive @key(fields: String!) on OBJECT | INTERFACE
+directive @external on FIELD_DEFINITION
+
+type Query {
+    user: User!
+    users(page: Int, size: Int, searchQuery: String): UserConnection!
+}
+
+type Mutation {
+    user(input: UserInput!): User!
+    friendship(input: FriendshipInput!): User!
+}
+
+type User @key(fields: "id") {
+    id: ID!
+    username: String!
+    firstname: String
+    surname: String
+    avatar: String
+    friendStatus: FriendStatus
+    friends(page: Int, size: Int, searchQuery: String): UserConnection
+    incomeInvitations(page: Int, size: Int, searchQuery: String): UserConnection
+    outcomeInvitations(page: Int, size: Int, searchQuery: String): UserConnection
+    location: UserCountry
+}
+
+type UserCountry @key(fields: "code") {
+  code: String!
+  name: String!
+  flag: String!
+}
+
+type UserConnection {
+    edges: [UserEdge!]!
+    total: Int!
+    pageInfo: PageInfo!
+}
+
+type UserEdge {
+    node: User!
+}
+
+input CountryInput {
+    code: String!
+}
+
+input FriendshipInput {
+    user: ID!
+    action: FriendshipAction!
+}
+
+input UserInput {
+    firstname: String
+    surname: String
+    avatar: String
+    location: CountryInput
+}
+
+
+enum FriendshipAction {
+    ADD, ACCEPT, REJECT, DELETE
+}
+
+enum FriendStatus {
+    NOT_FRIEND, INVITATION_SENT, INVITATION_RECEIVED, FRIEND
+}
+
+type PageInfo {
+    hasPreviousPage: Boolean!
+    hasNextPage: Boolean!
+}

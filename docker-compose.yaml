@@ -1,0 +1,127 @@
+version: '3.8'
+
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.6.0
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    networks:
+      - rangiffler-net
+
+  kafka:
+    image: confluentinc/cp-kafka:7.6.0
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"   # External port
+      - "9093:9093"   # Internal port for the host
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:9093
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_HOST://0.0.0.0:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - rangiffler-net
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    ports:
+      - "8085:8080"   # Change Kafka UI port to 8085
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+    depends_on:
+      - kafka
+    networks:
+      - rangiffler-net
+
+  auth:
+    build: ./rangiffler-auth
+    ports:
+      - '9000:9000'
+    environment:
+      SPRING_KAFKA_BOOTSTRAP-SERVERS: kafka:9092
+      NIFFLER-FRONT_BASE-URI: http://localhost
+      NIFFLER-AUTH_BASE-URI: http://localhost:9000
+    healthcheck:
+      test: "wget --spider http://localhost:9000/actuator/health || exit 1"
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      - kafka
+    networks:
+      - rangiffler-net
+
+  country-service:
+    build: ./rangiffler-country-service
+#    ports:
+#      - '4001:4001'
+    environment:
+      MICRONAUT_SECURITY_ENABLED: true
+    depends_on:
+      - auth
+    networks:
+      - rangiffler-net
+
+  user-service:
+    build: ./rangiffler-user-service
+#    ports:
+#      - '4002:4002'
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      MICRONAUT_SECURITY_ENABLED: true
+    depends_on:
+      - kafka
+      - auth
+      - country-service
+    networks:
+      - rangiffler-net
+
+  photo-service:
+    build: ./rangiffler-photo-service
+#    ports:
+#      - '4003:4003'
+    environment:
+      MICRONAUT_SECURITY_ENABLED: true
+    depends_on:
+      - auth
+      - country-service
+      - user-service
+    networks:
+      - rangiffler-net
+
+  gateway:
+    build: ./rangiffler-gateway
+    ports:
+      - '4000:4000'
+    depends_on:
+      - auth
+      - user-service
+      - country-service
+      - photo-service
+    networks:
+      - rangiffler-net
+
+  frontend:
+    build:
+      context: ./rangiffler-gql-client
+      args:
+        NPM_COMMAND: build:docker
+    ports:
+      - '80:80'
+    depends_on:
+      - auth
+      - gateway
+    networks:
+      - rangiffler-net
+
+networks:
+  rangiffler-net:
+    driver: bridge

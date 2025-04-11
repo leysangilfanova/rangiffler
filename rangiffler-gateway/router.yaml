@@ -1,0 +1,21 @@
+# router.yaml (runtime config)
+supergraph:
+  listen: 0.0.0.0:4000
+  introspection: true
+  path: /graphql
+limits:
+  introspection_max_depth: false
+
+headers:
+  all:
+    request:
+      - propagate:
+          matching: .*
+
+cors:
+  allow_any_origin: true
+  methods:
+    - GET
+    - POST
+    - OPTIONS
+  allow_headers: []

@@ -1,0 +1,71 @@
+plugins {
+    id 'java'
+}
+
+version = "0.1"
+group = "leisan-rangiffler"
+
+allprojects {
+    repositories {
+        mavenCentral()
+    }
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(21)
+        }
+    }
+}
+subprojects {
+    apply plugin: 'java'
+    dependencies {
+        implementation("org.projectlombok:lombok:1.18.30")
+        annotationProcessor("org.projectlombok:lombok:1.18.30")
+        testImplementation("org.projectlombok:lombok:1.18.30")
+        testAnnotationProcessor("org.projectlombok:lombok:1.18.30")
+        testImplementation("org.junit.jupiter:junit-jupiter:5.12.1")
+        testImplementation("com.jayway.jsonpath:json-path:2.9.0")
+        testImplementation("org.assertj:assertj-core:3.27.3")
+        testImplementation("io.qameta.allure:allure-junit5:2.29.0")
+        testImplementation("com.squareup.retrofit2:converter-jackson:2.11.0")
+        testImplementation("org.hibernate:hibernate-core:6.6.0.Final")
+        testImplementation("com.codeborne:selenide:7.4.2")
+        testImplementation("org.springframework.data:spring-data-commons:3.3.3")
+        testImplementation("org.apache.kafka:kafka-clients:3.8.0")
+        testImplementation("com.github.javafaker:javafaker:1.0.2") {
+            exclude group: 'org.yaml'
+        }
+        testImplementation("com.squareup.okhttp3:okhttp:4.11.0")
+        testImplementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
+        testImplementation("com.squareup.okhttp3:okhttp-urlconnection:4.11.0")
+        testImplementation("io.qameta.allure:allure-okhttp3:2.29.0")
+    }
+
+    ext {
+        lombokVersion = '1.18.36'
+        springKafkaVersion = '3.3.4'
+        springVaultVersion = '4.2.1'
+        springOpenApiVersion = '2.8.6'
+        postgresDriverVersion = '42.7.5'
+        flywayVersion = '11.5.0'
+        springGrpcVersion = '3.1.0.RELEASE'
+        springGraphqlDateTimeVersion = '6.0.0'
+        jakartaJaxbVersion = '4.0.2'
+        wsdl4jVersion = '1.6.3'
+        protobufVersion = '3.25.3'
+        grpcVersion = '1.63.0'
+        thumbnailatorVersion = '0.4.20'
+        h2Version = '2.3.232'
+        mockitoVersion = '5.16.1'
+
+        dockerImage = System.getProperty("os.arch") == "aarch64" || System.getProperty("os.arch") == "arm64"
+                ? "arm64v8/eclipse-temurin:21-jdk"
+                : "eclipse-temurin:21-jdk"
+        dockerArch = System.getProperty("os.arch") == "aarch64" || System.getProperty("os.arch") == "arm64"
+                ? "arm64"
+                : "amd64"
+    }
+
+    test {
+        useJUnitPlatform()
+    }
+}

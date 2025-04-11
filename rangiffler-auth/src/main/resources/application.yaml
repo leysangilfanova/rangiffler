@@ -1,0 +1,76 @@
+server:
+  port: 9000
+  error:
+    whitelabel:
+      enabled: false
+    path: /error
+  servlet:
+    session:
+      timeout: 60m
+      cookie:
+        name: JSESSIONID
+
+spring:
+  application:
+    name: rangiffler-auth
+  mvc:
+    log-request-details: true
+  kafka:
+    bootstrap-servers: 'localhost:9093' #SPRING_KAFKA_BOOTSTRAP-SERVERS
+  datasource:
+    url: jdbc:h2:mem:mydb;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+    driverClassName: org.h2.Driver
+    hikari:
+      connection-timeout: 20000
+      minimum-idle: 10
+      maximum-pool-size: 30
+      idle-timeout: 10000
+      max-lifetime: 1000
+      auto-commit: true
+  flyway:
+    url: jdbc:h2:mem:mydb;DB_CLOSE_DELAY=-1
+    user: sa
+    password:
+    enabled: true
+    baseline-on-migrate: true
+    baseline-version: 0
+    locations: classpath:db/migration/niffler-auth
+  session:
+    store-type: jdbc
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            non_contextual_creation: true
+    show-sql: false
+    generate-ddl: true
+    open-in-view: false
+
+logging:
+  level:
+    root: INFO
+    org.springframework.kafka: INFO
+    org.springframework.web: INFO
+    org.springframework.web.cors: INFO
+    org.springframework.security.web.csrf: INFO
+    org.springframework.security.web.authentication.logout: INFO
+    org.springframework.security: INFO
+    org.springframework.security.oauth2: INFO
+    org.springframework.security.oauth2.server.authorization: INFO
+    org.apache.catalina.filters.RequestDumperFilter: INFO
+    org.springframework.boot.autoconfigure: INFO
+    org.apache.coyote.http11.Http11Processor: INFO
+
+oauth2:
+  web-client-id: 'client'
+  mobile-client-id: 'mobile-client'
+  mobile-custom-scheme: 'app://'
+niffler-front:
+  base-uri: 'http://127.0.0.1:3001' #NIFFLER-FRONT_BASE-URI
+niffler-auth:
+  base-uri: 'http://127.0.0.1:9000' #NIFFLER-AUTH_BASE-URI

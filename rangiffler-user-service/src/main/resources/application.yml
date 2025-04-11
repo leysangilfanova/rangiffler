@@ -1,0 +1,70 @@
+micronaut:
+  application:
+    name: rangiffler-user-service
+  server:
+    port: 4002
+  security:
+    enabled: true #MICRONAUT_SECURITY_ENABLED
+    token:
+      jwt:
+        enabled: true
+        signatures:
+          jwks:
+            your-provider:
+              url: http://auth:9000/oauth2/jwks
+    intercept-url-map:
+      - pattern: /graphql
+        access:
+          - isAuthenticated()
+      - pattern: /graphiql
+        access:
+          - isAnonymous()
+      - pattern: /internal/users/**
+        access:
+          - isAnonymous()
+
+kafka:
+  bootstrap:
+    servers: localhost:9093 # Kafka broker address
+  consumer:
+    user-service: # Matches the groupId in @KafkaListener
+      key:
+        deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value:
+        deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+datasources:
+  default:
+    url: 'jdbc:h2:mem:liquibaseDisabledDb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=TRUE'
+    username: 'sa'
+    password: ''
+    driverClassName: 'org.h2.Driver'
+
+graphql:
+  enabled: true
+  graphiql: # enables the /graphiql endpoint to test calls against your graph.
+    enabled: true
+
+
+liquibase:
+  datasources:
+    default:
+      change-log: 'classpath:db/changelog-master.yaml'
+
+endpoints:
+  liquibase:
+    enabled: true
+    sensitive: false
+jpa:
+    default:
+        packages-to-scan:
+            - 'com.leisan.user.service.model'
+        properties:
+            hibernate:
+                hbm2ddl:
+                    auto: none
+                show_sql: true
+logger:
+  levels:
+    ROOT: INFO
+    io.micronaut: INFO

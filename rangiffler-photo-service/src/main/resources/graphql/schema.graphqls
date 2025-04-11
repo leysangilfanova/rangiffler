@@ -1,0 +1,87 @@
+# Define Federation directives manually
+directive @key(fields: String!) on OBJECT | INTERFACE
+directive @external on FIELD_DEFINITION
+# this is an optional directive discussed below
+directive @extends on OBJECT | INTERFACE
+extend schema
+  @link(url: "https://specs.apollo.dev/federation/v2.0",
+        import: ["@key", "@external"])
+
+scalar Date
+
+input PhotoInput {
+    id: ID
+    src: String
+    country: CountryInput
+    description: String
+    like: LikeInput
+}
+
+input CountryInput {
+    code: String!
+}
+
+input LikeInput {
+    user: ID!
+}
+type Query {
+    feed(withFriends: Boolean!): Feed!
+}
+
+type Mutation {
+    photo(input: PhotoInput!): Photo!
+    deletePhoto(id: ID!): Boolean
+}
+
+type Photo @key(fields: "id") {
+    id: ID!
+    src: String!
+    country: PhotoCountry!
+    description: String!
+    creationDate: Date!
+    likes: Likes
+}
+
+type Likes {
+    total: Int!
+    likes: [Like!]
+}
+
+type Like {
+    user: ID!
+    username: String!
+    creationDate: Date!
+}
+
+type PhotoConnection {
+    edges: [PhotoEdge!]!
+    total: Int!
+    pageInfo: PageInfo!
+}
+
+type PhotoEdge {
+    node: Photo!
+}
+
+type Feed {
+    username: String!
+    withFriends: Boolean!
+    photos(page: Int, size: Int): PhotoConnection
+    stat: [Stat!]
+}
+
+type Stat {
+    count: Int!
+    country: PhotoCountry!
+}
+
+type PhotoCountry @key(fields: "code") {
+  code: String!
+  name: String!
+  flag: String!
+}
+
+type PageInfo {
+    hasPreviousPage: Boolean!
+    hasNextPage: Boolean!
+}

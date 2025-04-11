@@ -1,0 +1,16 @@
+extend schema
+@link(url: "https://specs.apollo.dev/federation/v2.0",
+    import: ["@key"])
+type Query {
+    countries: [Country!]!
+}
+
+type Country @key(fields: "code") {
+    code: String!
+    name: String!
+    flag: String!
+}
+
+input CountryInput {
+    code: String!
+}
