@@ -95,3 +95,6 @@ allure open build/allure-report
 ```bash
 ./run-e2e-tests.sh
 ```
+Тестовое покрытие
+![Rangiffler Tests](tests.png)
+Так же имеются unit тесты

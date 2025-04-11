@@ -2,7 +2,6 @@ package com.leisan.rangiffler.page;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
-import com.leisan.rangiffler.config.Config;
 import io.qameta.allure.Step;
 import com.leisan.rangiffler.page.component.PeopleTable;
 
@@ -15,13 +14,11 @@ import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$x;
 import static com.codeborne.selenide.Selenide.$x;
 import static com.codeborne.selenide.Selenide.clearBrowserCookies;
-import static com.codeborne.selenide.Selenide.open;
 import static com.codeborne.selenide.Selenide.refresh;
 import static com.codeborne.selenide.Selenide.sleep;
 
 public class PeoplePage extends BasePage<PeoplePage> {
 
-    private static final Config CFG = Config.getInstance();
     private final SelenideElement friendsTab = $x("//button[text()='Friends']");
     private final SelenideElement incomeInvitationsTab = $x("//button[text()='Income invitations']");
     private final SelenideElement outcomeInvitationsTab = $x("//button[text()='Outcome invitations']");

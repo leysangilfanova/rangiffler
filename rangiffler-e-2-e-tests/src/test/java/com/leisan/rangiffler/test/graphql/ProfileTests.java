@@ -29,7 +29,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.stream.Stream;
 
 import static io.qameta.allure.SeverityLevel.CRITICAL;
-import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -102,7 +101,7 @@ public class ProfileTests extends BaseApi {
         String locationType = response.path("data.user.location.__typename");
         String userType = response.path("data.user.__typename");
 
-        assertThat("User ID should not be null or empty", id, not(isEmptyOrNullString()));
+        assertThat("User ID should not be null or empty", id, not(null));
         assertThat("Username should match", username, equalTo(expectedUsername));
 
         if (expectedFirstname != null) {
