@@ -108,4 +108,5 @@ allure open build/allure-report
 ```
 Тестовое покрытие
 ![Rangiffler Tests](tests.png)
-Так же имеются unit тесты
+
+Так же имеются unit тесты в каждом сервисе
