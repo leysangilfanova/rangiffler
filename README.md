@@ -87,6 +87,7 @@ rangiffler-project/
 ├── rangiffler-photo-service/
 ├── rangiffler-graphql-common/
 ├── rangiffler-gql-client/
+├── rangiffler-e-2-e-tests/
 ├── rangiffler-gateway/
 ├── docker-compose.yaml
 └── ...
