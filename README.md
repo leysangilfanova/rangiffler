@@ -56,7 +56,7 @@ docker-compose build
 docker-compose up
 ```
 
-- Gateway будет доступен на: [http://localhost:4000](http://localhost:4000)
+- Gateway будет доступен на: [http://localhost:4000/graphql](http://localhost:4000/graphql)
 - frontend часть [http://localhost](http://localhost)
 - auth:login, register pages  [http://localhost:9000](http://localhost:9000)
 - kafka-ui  [http://localhost:8085](http://localhost:8085)
