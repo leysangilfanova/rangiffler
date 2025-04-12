@@ -24,6 +24,7 @@ Rangiffler — это платформа для тех, кто вдохновл�
 - **Docker** (https://www.docker.com/)
 - **Docker Compose**
 - **Java 21** (JDK)
+- JDK 21 JAVA_HOME
 - **Node.js и npm** (https://nodejs.org/)
 - **allure** Для отчетов allure
 
